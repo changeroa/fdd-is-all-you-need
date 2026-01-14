@@ -1,9 +1,8 @@
 # FDD is All You Need
 
-[![npm version](https://badge.fury.io/js/fdd-is-all-you-need.svg)](https://www.npmjs.com/package/fdd-is-all-you-need)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A systematic multi-agent development workflow based on Feature-Driven Development (FDD) principles, designed to run within Claude Code.
+A systematic multi-agent development workflow based on Feature-Driven Development (FDD) principles, designed as a Claude Code plugin.
 
 ## Philosophy: Repeatable Precision
 
@@ -11,43 +10,26 @@ Quality comes from **process and accumulated context**, not genius one-shots. FD
 
 ## Installation
 
-### Via npm (Recommended)
+### Via Plugin Marketplace
 
 ```bash
-# Install globally
-npm install -g fdd-is-all-you-need
+# Add marketplace
+/plugin marketplace add changeroa/fdd-is-all-you-need
 
-# Install in your project
-npx fdd-is-all-you-need install
-
-# Or specify a directory
-npx fdd-is-all-you-need install ./my-project
-```
-
-### Via npx (No installation)
-
-```bash
-npx fdd-is-all-you-need install ./my-project
+# Install plugin
+/plugin install fdd-is-all-you-need
 ```
 
 ### Manual Installation
 
 ```bash
-git clone https://github.com/changeroa/FDD-is-all-you-need.git
-cd FDD-is-all-you-need
-bash install.sh /path/to/your/project
+git clone https://github.com/changeroa/fdd-is-all-you-need.git
+# Then add to your Claude Code plugins directory
 ```
 
 ## Quick Start
 
-After installation, start Claude Code in your project:
-
-```bash
-cd your-project
-claude
-```
-
-Then use the slash commands:
+After installation, use the slash commands in Claude Code:
 
 ```
 /FDD init          # Initialize project
@@ -97,31 +79,39 @@ Then use the slash commands:
 - Automatic quality checks via PostToolUse hooks
 - Iterative improvement with checkpointing
 
-## Project Structure
+## Plugin Structure
 
-After installation, your project will have:
+```
+fdd-is-all-you-need/
+├── .claude-plugin/
+│   ├── plugin.json         # Plugin metadata
+│   └── marketplace.json    # Marketplace definition
+├── commands/               # Slash commands (16 commands)
+├── agents/                 # Subagents (4 agents)
+│   ├── fdd-orchestrator.md # Central coordinator (Opus)
+│   ├── fdd-designer.md     # Detailed design (Sonnet)
+│   ├── fdd-developer.md    # Implementation (Sonnet)
+│   └── fdd-improver.md     # Artifact improvement (Sonnet)
+├── scripts/                # Utility scripts
+│   ├── quality-check.sh    # PostToolUse hook
+│   └── file-lock.sh        # Concurrent access protection
+└── templates/              # Configuration templates
+```
+
+## Project Structure (After `/FDD init`)
 
 ```
 your-project/
 ├── .claude/
-│   ├── commands/           # Slash command definitions
-│   │   ├── FDD.md
-│   │   ├── FDD-init.md
-│   │   ├── FDD-analyze.md
-│   │   ├── FDD-plan.md
-│   │   ├── FDD-design.md
-│   │   ├── FDD-develop.md
-│   │   ├── FDD-status.md
-│   │   └── FDD-resume.md
 │   └── settings.json       # Hook configuration
 ├── .FDD/
 │   ├── config.yaml         # Project configuration
 │   ├── feature_map.yaml    # Feature Map (source of truth)
-│   ├── hooks/              # Utility scripts
+│   ├── scripts/            # Utility scripts
 │   ├── iterations/         # Iteration artifacts
 │   ├── checkpoints/        # Resume points
 │   └── logs/               # Event logs
-└── CLAUDE.md               # Workflow guidelines
+└── CLAUDE.md               # FDD workflow guidelines (appended)
 ```
 
 ## Feature Map Structure
@@ -164,20 +154,16 @@ PostToolUse hooks run after every Write/Edit:
 Edit `.FDD/config.yaml`:
 
 ```yaml
-quality_check:
-  enabled: true
-  max_retries: 3
-
-artifact_quality:
-  max_iterations: 3
-
-approval_gates:
-  design_document: true
-  feature_map: true
-  detailed_design: true
-
-feature_development:
+settings:
   max_parallel_features: 3
+  approval_gates:
+    design_document: true
+    feature_map: true
+    detailed_design: false
+  quality_checks:
+    enabled: true
+    on_write: true
+    on_edit: true
 ```
 
 ## Parallel Execution
@@ -185,31 +171,39 @@ feature_development:
 Independent Feature Sets are developed in parallel:
 
 ```
-Iteration 1: [FS-001, FS-002] (no dependencies)
-Iteration 2: [FS-003, FS-004] (depend on FS-001)
-Iteration 3: [FS-005] (depends on FS-002, FS-003)
+Wave 1: [FS-001, FS-002] (no dependencies)
+Wave 2: [FS-003, FS-004] (depend on FS-001)
+Wave 3: [FS-005] (depends on FS-002, FS-003)
 ```
 
 ## Checkpointing & Resume
 
-Checkpoints are automatically saved after each iteration. Resume from interruption:
+Checkpoints are automatically saved after each wave. Resume from interruption:
 
 ```
 /FDD resume
 ```
 
-## CLI Commands
+## Available Commands
 
-```bash
-# Show help
-npx fdd-is-all-you-need help
-
-# Install to current directory
-npx fdd-is-all-you-need install
-
-# Or use the short alias
-fdd install ./my-project
-```
+| Command | Description |
+|---------|-------------|
+| `/FDD` | Show help and available commands |
+| `/FDD init` | Initialize FDD in current project |
+| `/FDD analyze` | Analyze requirements, create design document |
+| `/FDD plan` | Generate Feature Map |
+| `/FDD design` | Create detailed designs |
+| `/FDD develop` | Execute parallel development |
+| `/FDD status` | Show current progress |
+| `/FDD resume` | Resume from checkpoint |
+| `/FDD-validate-map` | Validate Feature Map |
+| `/FDD-validate-design` | Validate design document |
+| `/FDD-validate-detail` | Validate detailed design |
+| `/FDD-update-status` | Update feature status |
+| `/FDD-get-executable` | Find executable feature sets |
+| `/FDD-checkpoint` | Save checkpoint |
+| `/FDD-improve` | Run Validator/Improver loop |
+| `/FDD-rollback` | Rollback to checkpoint |
 
 ## Contributing
 
@@ -221,6 +215,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Links
 
-- [npm package](https://www.npmjs.com/package/fdd-is-all-you-need)
-- [GitHub repository](https://github.com/changeroa/FDD-is-all-you-need)
-- [Issue tracker](https://github.com/changeroa/FDD-is-all-you-need/issues)
+- [GitHub repository](https://github.com/changeroa/fdd-is-all-you-need)
+- [Issue tracker](https://github.com/changeroa/fdd-is-all-you-need/issues)
