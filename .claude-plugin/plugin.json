@@ -3,13 +3,7 @@
   "version": "1.0.0",
   "description": "Systematic multi-agent development workflow with Feature-Driven Development methodology. Includes quality gates, parallel execution, and automatic checkpointing.",
   "author": {
-    "name": "changeroa",
-    "email": "changeroa@users.noreply.github.com"
+    "name": "changeroa"
   },
-  "homepage": "https://github.com/changeroa/fdd-is-all-you-need",
-  "repository": "https://github.com/changeroa/fdd-is-all-you-need",
-  "license": "MIT",
-  "keywords": ["development", "workflow", "fdd", "multi-agent", "automation", "quality"],
-  "commands": "../commands/",
-  "agents": "../agents/"
+  "license": "MIT"
 }
