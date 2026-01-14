@@ -1,0 +1,70 @@
+# FDD Configuration
+# This file is automatically created by the installer
+
+project:
+  name: ""
+  description: ""
+  created_at: ""
+
+# Feature development settings
+feature_development:
+  max_parallel_features: 3
+  default_timeout: 600000  # 10 minutes
+
+# Quality check settings for code
+quality_check:
+  enabled: true
+  auto_fix: false
+  checks:
+    - linting
+    - type_check
+    - test_run
+  max_retries: 3
+
+# Artifact quality settings
+artifact_quality:
+  enabled: true
+  max_iterations: 3
+  validators:
+    design_document:
+      - completeness
+      - clarity
+      - consistency
+    feature_map:
+      - dependency_validity
+      - coverage
+      - granularity
+    detailed_design:
+      - technical_accuracy
+      - implementation_feasibility
+      - interface_consistency
+
+# Checkpoint settings
+checkpoints:
+  enabled: true
+  auto_save: true
+  save_interval: 300  # 5 minutes
+
+# Logging settings
+logging:
+  level: info  # debug, info, warn, error
+  events_file: .FDD/logs/events.jsonl
+  audit_file: .FDD/logs/audit.jsonl
+
+# Human-in-the-loop settings
+approval_gates:
+  design_document: true
+  feature_map: true
+  detailed_design: true
+  feature_completion: false
+
+# Agent settings
+agents:
+  orchestrator:
+    model: opus
+  validator:
+    model: sonnet
+  improver:
+    model: sonnet
+  developer:
+    model: sonnet

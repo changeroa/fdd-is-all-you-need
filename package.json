@@ -1,0 +1,22 @@
+{
+  "name": "fdd-is-all-you-need",
+  "version": "1.0.0",
+  "description": "FDD - Feature-Driven Development workflow for Claude Code. Systematic multi-agent development with quality gates, parallel execution, and checkpointing.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai",
+    "development",
+    "fdd",
+    "feature-driven-development",
+    "multi-agent",
+    "workflow"
+  ],
+  "author": "changeroa",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/changeroa/FDD-is-all-you-need"
+  },
+  "homepage": "https://github.com/changeroa/FDD-is-all-you-need#readme"
+}

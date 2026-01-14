@@ -1,0 +1,19 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node
+node_modules/
+npm-debug.log*
+
+# FDD runtime (created during usage)
+.FDD/
+
+# Local settings (user-specific)
+.claude/settings.local.json
