@@ -15,7 +15,10 @@
         "name": "changeroa",
         "email": "changeroa@users.noreply.github.com"
       },
-      "source": ".",
+      "source": {
+        "type": "url",
+        "url": "https://github.com/changeroa/fdd-is-all-you-need"
+      },
       "category": "development",
       "homepage": "https://github.com/changeroa/fdd-is-all-you-need"
     }
