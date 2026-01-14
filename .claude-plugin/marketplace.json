@@ -1,15 +1,23 @@
 {
   "$schema": "https://claude.ai/schemas/marketplace-manifest.json",
   "name": "fdd-is-all-you-need",
-  "displayName": "FDD is All You Need",
   "description": "Feature-Driven Development workflow plugin marketplace",
+  "owner": {
+    "name": "changeroa",
+    "email": "changeroa@users.noreply.github.com"
+  },
   "plugins": [
     {
       "name": "fdd-is-all-you-need",
-      "displayName": "FDD is All You Need - Feature-Driven Development",
       "description": "Systematic multi-agent development workflow with Feature-Driven Development methodology. Includes quality gates, parallel execution, and automatic checkpointing.",
       "version": "1.0.0",
-      "path": "."
+      "author": {
+        "name": "changeroa",
+        "email": "changeroa@users.noreply.github.com"
+      },
+      "source": ".",
+      "category": "development",
+      "homepage": "https://github.com/changeroa/fdd-is-all-you-need"
     }
   ]
 }
