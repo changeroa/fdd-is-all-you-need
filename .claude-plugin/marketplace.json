@@ -1,5 +1,5 @@
 {
-  "$schema": "https://claude.ai/schemas/marketplace-manifest.json",
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "fdd-is-all-you-need",
   "description": "Feature-Driven Development workflow plugin marketplace",
   "owner": {
@@ -16,8 +16,8 @@
         "email": "changeroa@users.noreply.github.com"
       },
       "source": {
-        "type": "url",
-        "url": "https://github.com/changeroa/fdd-is-all-you-need"
+        "source": "url",
+        "url": "https://github.com/changeroa/fdd-is-all-you-need.git"
       },
       "category": "development",
       "homepage": "https://github.com/changeroa/fdd-is-all-you-need"
