@@ -1,0 +1,15 @@
+{
+  "$schema": "https://claude.ai/schemas/marketplace-manifest.json",
+  "name": "fdd-is-all-you-need",
+  "displayName": "FDD is All You Need",
+  "description": "Feature-Driven Development workflow plugin marketplace",
+  "plugins": [
+    {
+      "name": "fdd-is-all-you-need",
+      "displayName": "FDD is All You Need - Feature-Driven Development",
+      "description": "Systematic multi-agent development workflow with Feature-Driven Development methodology. Includes quality gates, parallel execution, and automatic checkpointing.",
+      "version": "1.0.0",
+      "path": "."
+    }
+  ]
+}
