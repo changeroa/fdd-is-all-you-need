@@ -1,100 +1,15 @@
 {
-  "$schema": "https://claude.ai/schemas/plugin-manifest.json",
   "name": "fdd-is-all-you-need",
-  "displayName": "FDD is All You Need - Feature-Driven Development",
   "version": "1.0.0",
   "description": "Systematic multi-agent development workflow with Feature-Driven Development methodology. Includes quality gates, parallel execution, and automatic checkpointing.",
-  "author": "changeroa",
+  "author": {
+    "name": "changeroa",
+    "email": "changeroa@users.noreply.github.com"
+  },
   "homepage": "https://github.com/changeroa/fdd-is-all-you-need",
   "repository": "https://github.com/changeroa/fdd-is-all-you-need",
   "license": "MIT",
-  "keywords": [
-    "development",
-    "workflow",
-    "fdd",
-    "multi-agent",
-    "automation",
-    "quality"
-  ],
-  "categories": [
-    "Development",
-    "Productivity",
-    "Workflow"
-  ],
-  "commands": [
-    {
-      "name": "FDD",
-      "description": "Show FDD help and available commands"
-    },
-    {
-      "name": "FDD-init",
-      "description": "Initialize FDD in the current project"
-    },
-    {
-      "name": "FDD-analyze",
-      "description": "Analyze requirements and create design document"
-    },
-    {
-      "name": "FDD-plan",
-      "description": "Generate Feature Map from design document"
-    },
-    {
-      "name": "FDD-design",
-      "description": "Create detailed implementation designs"
-    },
-    {
-      "name": "FDD-develop",
-      "description": "Execute parallel feature development"
-    },
-    {
-      "name": "FDD-status",
-      "description": "Show current progress and state"
-    },
-    {
-      "name": "FDD-resume",
-      "description": "Resume from last checkpoint"
-    },
-    {
-      "name": "FDD-validate-map",
-      "description": "Validate Feature Map structure and dependencies"
-    },
-    {
-      "name": "FDD-validate-design",
-      "description": "Validate design document completeness"
-    },
-    {
-      "name": "FDD-validate-detail",
-      "description": "Validate detailed design technical accuracy"
-    },
-    {
-      "name": "FDD-update-status",
-      "description": "Update feature or feature set status"
-    },
-    {
-      "name": "FDD-get-executable",
-      "description": "Find executable feature sets"
-    },
-    {
-      "name": "FDD-checkpoint",
-      "description": "Save current state as checkpoint"
-    },
-    {
-      "name": "FDD-improve",
-      "description": "Run Validator/Improver quality loop"
-    },
-    {
-      "name": "FDD-rollback",
-      "description": "Rollback Feature Sets or restore from checkpoints"
-    }
-  ],
-  "features": [
-    "Feature-Driven Development workflow",
-    "3-layer context (Business → Design → Implementation)",
-    "Parallel feature development",
-    "Automatic quality gates",
-    "Validator/Improver loops for artifacts",
-    "Checkpointing and resume capability",
-    "Human-in-the-loop approval gates"
-  ],
-  "agents": "../agents"
+  "keywords": ["development", "workflow", "fdd", "multi-agent", "automation", "quality"],
+  "commands": "../commands/",
+  "agents": "../agents/"
 }
