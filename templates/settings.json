@@ -18,6 +18,10 @@
       "Bash(npm run *)",
       "Bash(npx *)",
       "Bash(bash .FDD/scripts/*)",
+      "Bash(python3 *)",
+      "Bash(go *)",
+      "Bash(cargo *)",
+      "Bash(git *)",
       "Read(.FDD/**)",
       "Write(.FDD/**)",
       "Edit(.FDD/**)"

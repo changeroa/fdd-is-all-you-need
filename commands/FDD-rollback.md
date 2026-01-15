@@ -1,6 +1,7 @@
 # FDD Rollback
 
 Rollback Feature Sets or restore from checkpoints after failures.
+Now with Git integration for complete state + code rollback.
 
 ## Usage
 ```
@@ -11,113 +12,145 @@ Rollback Feature Sets or restore from checkpoints after failures.
 
 | Mode | Description | Target |
 |------|-------------|--------|
+| `list` | List available checkpoints | - |
 | `checkpoint` | Restore from a checkpoint | Checkpoint filename or `latest` |
 | `feature-set` | Reset a Feature Set to pending | Feature Set ID (e.g., FS-001) |
 | `feature` | Reset a single Feature to pending | Feature ID (e.g., F-001-002) |
-| `list` | List available checkpoints | - |
+| `full` | Restore both state AND code | Checkpoint filename or `latest` |
 
 ### Examples
 ```
 /FDD-rollback list
 /FDD-rollback checkpoint latest
-/FDD-rollback checkpoint checkpoint_20240114_153045.yaml
+/FDD-rollback checkpoint checkpoint_20240114_153045_123
 /FDD-rollback feature-set FS-003
 /FDD-rollback feature F-002-001
+/FDD-rollback full latest
 ```
 
 ## Instructions
 
 ### Mode: `list`
 
-List all available checkpoints:
-```
-ls -la .FDD/checkpoints/
+Use the checkpoint script:
+```bash
+bash .FDD/scripts/checkpoint-git.sh list
 ```
 
 Output:
 ```
-=== Available Checkpoints ===
-1. checkpoint_20240114_153045.yaml (latest)
-   - Created: 2024-01-14 15:30:45
-   - Iteration: 3
-   - Feature Set: FS-002
+═══════════════════════════════════════════════════
+[FDD Checkpoint] Available Checkpoints
+═══════════════════════════════════════════════════
 
-2. checkpoint_20240114_142030.yaml
-   - Created: 2024-01-14 14:20:30
-   - Iteration: 2
-   - Feature Set: FS-001
+1. checkpoint_20240114_153045_123 (latest)
+   Created: 2024-01-14T15:30:45Z
+   Iteration: 3
+   Feature Set: FS-002
+   Progress: 2/5 completed
+   Git tag: fdd-checkpoint_20240114_153045_123
 
-3. checkpoint_20240114_130015.yaml
-   - Created: 2024-01-14 13:00:15
-   - Iteration: 1
-   - Feature Set: FS-001
+2. checkpoint_20240114_142030_456
+   Created: 2024-01-14T14:20:30Z
+   Iteration: 2
+   Feature Set: FS-001
+   Progress: 1/5 completed
+   Git tag: fdd-checkpoint_20240114_142030_456
 ```
 
 ### Mode: `checkpoint`
 
 Restore Feature Map state from a checkpoint:
 
+```bash
+bash .FDD/scripts/checkpoint-git.sh restore <checkpoint_name|latest>
+```
+
+This will:
 1. **Acquire lock** on feature_map.yaml
-2. **Backup current state**:
-   ```
-   cp .FDD/feature_map.yaml .FDD/feature_map.yaml.pre-rollback
-   ```
-3. **Load checkpoint**:
-   - If `latest`: Find most recent file in `.FDD/checkpoints/`
-   - Otherwise: Load specified checkpoint file
-4. **Restore Feature Map**:
-   ```
-   cp .FDD/checkpoints/<checkpoint> .FDD/feature_map.yaml
-   ```
-5. **Remove checkpoint metadata** from restored file (the `checkpoint:` section at the end)
-6. **Log rollback event**
-7. **Release lock**
+2. **Backup current state** to `.FDD/feature_map.yaml.pre-rollback`
+3. **Restore Feature Map** from checkpoint
+4. **Log rollback event**
+5. **Release lock**
+6. Show Git commands to restore code if needed
 
 Output:
 ```
-=== Checkpoint Rollback ===
-Restored from: checkpoint_20240114_153045.yaml
-Previous state backed up to: feature_map.yaml.pre-rollback
+═══════════════════════════════════════════════════
+[FDD Checkpoint] Restoring from: checkpoint_20240114_153045_123
+═══════════════════════════════════════════════════
+[Checkpoint] Current state backed up to: feature_map.yaml.pre-rollback
+[Checkpoint] Feature map restored
 
-State after rollback:
-- Completed: FS-001, FS-002
-- In Progress: (none)
-- Pending: FS-003, FS-004, FS-005
+[Checkpoint] Git restore options:
+  1. View changes since checkpoint:
+     git diff fdd-checkpoint_20240114_153045_123..HEAD
 
-Note: Code changes are NOT rolled back. Only Feature Map state is restored.
+  2. Restore code to checkpoint state:
+     git checkout fdd-checkpoint_20240114_153045_123
+     # or
+     git reset --hard fdd-checkpoint_20240114_153045_123
+
+  Note: Feature Map state has been restored.
+  Use the commands above to also restore code if needed.
+
+✓ Feature Map restored successfully
+═══════════════════════════════════════════════════
 ```
 
 ### Mode: `feature-set`
 
 Reset a Feature Set and all its features to `pending`:
 
-1. **Acquire lock** on feature_map.yaml
-2. **Create pre-rollback backup**
+1. **Acquire lock** with agent ID:
+```bash
+bash .FDD/scripts/file-lock.sh acquire .FDD/feature_map.yaml rollback-agent 30 300
+```
+
+2. **Create pre-rollback backup**:
+```bash
+cp .FDD/feature_map.yaml .FDD/feature_map.yaml.pre-rollback
+```
+
 3. **Update Feature Set**:
-   ```yaml
-   feature_sets:
-     - id: FS-003
-       status: pending  # Reset from in_progress/completed/blocked
-       features:
-         - id: F-003-001
-           status: pending  # Reset all features
-         - id: F-003-002
-           status: pending
-   ```
+```yaml
+feature_sets:
+  - id: FS-003
+    status: pending  # Reset from in_progress/completed/blocked
+    features:
+      - id: F-003-001
+        status: pending  # Reset all features
+      - id: F-003-002
+        status: pending
+```
+
 4. **Update metadata** (recalculate completed counts)
-5. **Log rollback event**:
-   ```json
-   {"timestamp":"...","event":"rollback","type":"feature_set","target":"FS-003","previous_status":"blocked"}
-   ```
-6. **Release lock**
+
+5. **Save atomically**:
+```bash
+cat updated.yaml | bash .FDD/scripts/atomic-write.sh update .FDD/feature_map.yaml
+```
+
+6. **Log rollback event**:
+```json
+{"timestamp":"...","event":"rollback","type":"feature_set","target":"FS-003","previous_status":"blocked"}
+```
+
+7. **Release lock**:
+```bash
+bash .FDD/scripts/file-lock.sh release .FDD/feature_map.yaml rollback-agent
+```
 
 Output:
 ```
-=== Feature Set Rollback ===
+═══════════════════════════════════════════════════
+[FDD Rollback] Feature Set Reset
+═══════════════════════════════════════════════════
 Reset FS-003: blocked → pending
 Reset features: F-003-001, F-003-002, F-003-003
 
 Note: Implementation code is preserved. Re-run /FDD-develop to retry.
+═══════════════════════════════════════════════════
 ```
 
 ### Mode: `feature`
@@ -126,15 +159,55 @@ Reset a single Feature to `pending`:
 
 1. **Acquire lock**
 2. **Update Feature status**:
-   ```yaml
-   features:
-     - id: F-002-003
-       status: pending  # Reset from in_progress/completed
-   ```
+```yaml
+features:
+  - id: F-002-003
+    status: pending  # Reset from in_progress/completed
+```
+
 3. **Update parent Feature Set status** if it was `completed`:
    - Change to `in_progress` (since not all features are complete anymore)
-4. **Log event**
-5. **Release lock**
+
+4. **Save atomically**
+5. **Log event**
+6. **Release lock**
+
+### Mode: `full`
+
+Full rollback - restore both Feature Map state AND code:
+
+```bash
+# 1. Restore Feature Map state
+bash .FDD/scripts/checkpoint-git.sh restore <checkpoint_name|latest>
+
+# 2. Get the Git tag from checkpoint info
+bash .FDD/scripts/checkpoint-git.sh info <checkpoint_name>
+
+# 3. Restore code
+git reset --hard fdd-<checkpoint_name>
+```
+
+**Warning**: This discards all code changes since the checkpoint!
+
+Output:
+```
+═══════════════════════════════════════════════════
+[FDD Rollback] Full Restore
+═══════════════════════════════════════════════════
+⚠ WARNING: This will discard all code changes since checkpoint!
+
+Checkpoint: checkpoint_20240114_153045_123
+Git tag: fdd-checkpoint_20240114_153045_123
+
+Proceed? (Requires explicit confirmation)
+
+If confirmed:
+1. Feature Map restored
+2. Git reset to fdd-checkpoint_20240114_153045_123
+3. Working directory matches checkpoint state
+
+═══════════════════════════════════════════════════
+```
 
 ## Rollback Strategies
 
@@ -153,23 +226,37 @@ Option 2: Rollback single Feature (preserve progress)
   /FDD-rollback feature F-003-004
   Result: Only F-003-004 reset, features 1-3 remain completed
   Then: Manually fix F-003-004 or resume development
+
+Option 3: Check if timeout caused it
+  bash .FDD/scripts/timeout-monitor.sh reset FS-003
 ```
 
 ### After Corrupted State
 
 If feature_map.yaml is corrupted or inconsistent:
 
-```
-/FDD-rollback checkpoint latest
+```bash
+# Restore from last checkpoint
+bash .FDD/scripts/checkpoint-git.sh restore latest
 ```
 
-This restores the last known good state.
+### After State-Code Mismatch
+
+If Feature Map says completed but code is wrong:
+
+```bash
+# Check consistency first
+bash .FDD/scripts/validate-consistency.sh check
+
+# If mismatch found, full rollback
+/FDD-rollback full latest
+```
 
 ### Undo Recent Change
 
 If a recent status update was wrong:
 
-```
+```bash
 # Check pre-rollback backup
 cat .FDD/feature_map.yaml.pre-rollback
 
@@ -190,7 +277,11 @@ This allows undoing the rollback itself if needed.
 
 ### Lock Requirement
 
-All rollback operations acquire exclusive lock to prevent concurrent modifications.
+All rollback operations acquire exclusive lock with agent ID to prevent concurrent modifications.
+
+### Atomic Operations
+
+All state changes use atomic-write.sh to prevent corruption during rollback.
 
 ### Logging
 
@@ -199,26 +290,28 @@ All rollback events are logged to `.FDD/logs/events.jsonl`:
 {
   "timestamp": "2024-01-14T15:45:00Z",
   "event": "rollback",
-  "type": "checkpoint",
-  "source": "checkpoint_20240114_153045.yaml",
+  "type": "checkpoint|feature_set|feature|full",
+  "target": "checkpoint_20240114_153045_123",
   "backed_up_to": "feature_map.yaml.pre-rollback"
 }
 ```
 
 ## Important Notes
 
-1. **Code is NOT rolled back** - Only Feature Map state changes. Implemented code remains in the codebase.
+1. **State-only rollback** (`checkpoint` mode) - Only Feature Map changes. Code remains as-is.
 
-2. **Checkpoints are Feature Map snapshots** - They don't include code state.
+2. **Full rollback** (`full` mode) - Both state AND code restored. All changes since checkpoint are lost.
 
-3. **For code rollback**, use Git:
+3. **Git integration** - Checkpoints have associated Git tags for code restoration.
+
+4. **For code-only rollback**, use Git directly:
    ```bash
    git log --oneline  # Find commit before feature implementation
    git checkout <commit> -- <files>  # Restore specific files
    ```
 
-4. **Combine strategies** for full rollback:
-   ```
+5. **Combine strategies** for partial rollback:
+   ```bash
    # 1. Rollback Feature Map state
    /FDD-rollback feature-set FS-003
 
