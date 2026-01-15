@@ -1,6 +1,8 @@
 # FDD is All You Need
 
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/changeroa/fdd-is-all-you-need/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-purple.svg)](https://github.com/anthropics/claude-code)
 
 A systematic multi-agent development workflow based on Feature-Driven Development (FDD) principles, designed as a Claude Code plugin.
 
@@ -84,18 +86,27 @@ After installation, use the slash commands in Claude Code:
 ```
 fdd-is-all-you-need/
 ├── .claude-plugin/
-│   ├── plugin.json         # Plugin metadata
-│   └── marketplace.json    # Marketplace definition
-├── commands/               # Slash commands (16 commands)
-├── agents/                 # Subagents (4 agents)
-│   ├── fdd-orchestrator.md # Central coordinator (Opus)
-│   ├── fdd-designer.md     # Detailed design (Sonnet)
-│   ├── fdd-developer.md    # Implementation (Sonnet)
-│   └── fdd-improver.md     # Artifact improvement (Sonnet)
-├── scripts/                # Utility scripts
-│   ├── quality-check.sh    # PostToolUse hook
-│   └── file-lock.sh        # Concurrent access protection
-└── templates/              # Configuration templates
+│   ├── plugin.json          # Plugin metadata
+│   └── marketplace.json     # Marketplace definition
+├── commands/                # Slash commands (16 commands)
+├── agents/                  # Subagents (4 agents)
+│   ├── fdd-orchestrator.md  # Central coordinator (Opus)
+│   ├── fdd-designer.md      # Detailed design (Sonnet)
+│   ├── fdd-developer.md     # Implementation (Sonnet)
+│   └── fdd-improver.md      # Artifact improvement (Sonnet)
+├── scripts/                 # Utility scripts (7 scripts)
+│   ├── quality-check.sh     # PostToolUse code quality hook
+│   ├── file-lock.sh         # Concurrent access protection
+│   ├── atomic-write.sh      # Safe file write operations
+│   ├── checkpoint-git.sh    # Git-based checkpointing
+│   ├── timeout-monitor.sh   # Task timeout monitoring
+│   ├── validate-deps.sh     # Dependency validation
+│   └── validate-consistency.sh  # Artifact consistency check
+├── templates/               # Configuration templates
+└── docs/                    # Documentation
+    ├── SPECIFICATION.md     # Full FDD specification
+    ├── ID_CONVENTIONS.md    # ID naming conventions
+    └── IMPLEMENTATION_PLAN.md
 ```
 
 ## Project Structure (After `/FDD init`)

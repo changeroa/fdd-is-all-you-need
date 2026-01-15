@@ -1,6 +1,6 @@
 {
   "name": "fdd-is-all-you-need",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Systematic multi-agent development workflow with Feature-Driven Development methodology. Includes quality gates, parallel execution, and automatic checkpointing.",
   "author": {
     "name": "changeroa"
