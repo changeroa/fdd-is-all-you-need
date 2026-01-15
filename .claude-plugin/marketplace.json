@@ -16,7 +16,7 @@
         "email": "changeroa@users.noreply.github.com"
       },
       "source": {
-        "source": "url",
+        "type": "url",
         "url": "https://github.com/changeroa/fdd-is-all-you-need.git"
       },
       "category": "development",
